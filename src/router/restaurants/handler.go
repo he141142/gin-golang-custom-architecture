@@ -35,11 +35,10 @@ func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.C
 func (restaurantRouter *RestaurantRouter) getAllRestaurants() func(context *gin.Context) {
 	return func(context *gin.Context) {
 		restaurantsData := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db)
-		dataresponse := &restaurant.AllRestaurantDto{
-			restaurantsData,
-		}
-
-		response.SystemResponse(http.StatusOK, structs.Map(dataresponse), context)
+		dataresponse := response.BaseResponseData[restaurant.AllRestaurantDto](&restaurant.AllRestaurantDto{
+			Restaurants: restaurantsData,
+		})
+		response.SystemResponse(http.StatusOK, dataresponse, context)
 	}
 }
 
