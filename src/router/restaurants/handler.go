@@ -31,24 +31,37 @@ func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.C
 	}
 }
 
-func (restaurantRouter *RestaurantRouter) getRestaurantById() func(context *gin.Context) {
+
+func (restaurantRouter *RestaurantRouter) getAllRestaurants() func(context *gin.Context) {
 	return func(context *gin.Context) {
-		var data model.Restaurant
-
-		if err := errorHandling.ValidateDto(context, &data); err != nil {
-			response.SystemResponse(http.StatusBadRequest, map[string]interface {
-			}{
-				"error": err.Error(),
-			}, context)
-		}
-
-		err, dataresponse := restaurantRouter.service.CreateRestaurant(&data, restaurantRouter.service.Db)
-		if err != nil {
-			response.SystemResponse(http.StatusBadRequest, map[string]interface {
-			}{
-				"error": err.Error(),
-			}, context)
-		}
+		dataresponse := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db)
+		//if err != nil {
+		//	response.SystemResponse(http.StatusBadRequest, map[string]interface {
+		//	}{
+		//		"error": err.Error(),
+		//	}, context)
+		//}
 		response.SystemResponse(http.StatusOK, structs.Map(dataresponse), context)
 	}
 }
+//func (restaurantRouter *RestaurantRouter) getRestaurantById() func(context *gin.Context) {
+//	return func(context *gin.Context) {
+//		var data model.Restaurant
+//
+//		if err := errorHandling.ValidateDto(context, &data); err != nil {
+//			response.SystemResponse(http.StatusBadRequest, map[string]interface {
+//			}{
+//				"error": err.Error(),
+//			}, context)
+//		}
+//
+//		err, dataresponse := restaurantRouter.service.CreateRestaurant(&data, restaurantRouter.service.Db)
+//		if err != nil {
+//			response.SystemResponse(http.StatusBadRequest, map[string]interface {
+//			}{
+//				"error": err.Error(),
+//			}, context)
+//		}
+//		response.SystemResponse(http.StatusOK, structs.Map(dataresponse), context)
+//	}
+//}

@@ -26,8 +26,7 @@ func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *
 	restaurant := r.Group(name)
 	{
 		restaurant.POST("", restaurantRouter.createRestaurant())
-		restaurant.GET("/:id", func(context *gin.Context) {
-		})
+		restaurant.GET("", restaurantRouter.getAllRestaurants())
 	}
 }
 

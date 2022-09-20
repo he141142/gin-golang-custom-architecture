@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"gorm.io/gorm"
+	"time"
 )
 
-func RawSQLScanner(query *gorm.DB,source interface{}){
+func RawSQLScanner(query *gorm.DB, source interface{}) {
 	rows, err := query.Rows()
 	if err != nil {
 		fmt.Println(err)
@@ -23,4 +24,16 @@ func RawSQLScanner(query *gorm.DB,source interface{}){
 			fmt.Println(err)
 		}
 	}
+}
+
+type Ordered interface {
+	uint64 | string | time.Time | float32
+}
+
+func GenericTypeCast[T](inputVal any, ref T) {
+	val, err := inputVal.(T)
+	if !err {
+		ref = val
+	}
+	//ref = nil
 }
