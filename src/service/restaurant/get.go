@@ -55,11 +55,11 @@ func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}
 			}
 		case k == "lat":
 			if v != nil {
-				bind.Lat = v.(float32)
+				bind.Lat = v.(float64)
 			}
 		case k == "shipping_fee_per_km":
 			if v != nil {
-				bind.ShippingFeePerKm = v.(float32)
+				bind.ShippingFeePerKm = v.(float64)
 			}
 		}
 	}

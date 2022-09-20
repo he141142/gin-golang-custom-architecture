@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"sykros-pro/gopro/src/constants/response"
 	"sykros-pro/gopro/src/database/model"
+	"sykros-pro/gopro/src/service/restaurant"
 	"sykros-pro/gopro/src/share/errorHandling"
 )
 
@@ -31,19 +32,17 @@ func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.C
 	}
 }
 
-
 func (restaurantRouter *RestaurantRouter) getAllRestaurants() func(context *gin.Context) {
 	return func(context *gin.Context) {
-		dataresponse := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db)
-		//if err != nil {
-		//	response.SystemResponse(http.StatusBadRequest, map[string]interface {
-		//	}{
-		//		"error": err.Error(),
-		//	}, context)
-		//}
+		restaurantsData := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db)
+		dataresponse := &restaurant.AllRestaurantDto{
+			restaurantsData,
+		}
+
 		response.SystemResponse(http.StatusOK, structs.Map(dataresponse), context)
 	}
 }
+
 //func (restaurantRouter *RestaurantRouter) getRestaurantById() func(context *gin.Context) {
 //	return func(context *gin.Context) {
 //		var data model.Restaurant
