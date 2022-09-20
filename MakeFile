@@ -1,0 +1,5 @@
+run:
+	go run cmd/main.go
+
+migrate-up:
+	migrate -path ./migrations -database "postgres://postgres:postgres@localhost:9008/learngolang?sslmode=disable" up

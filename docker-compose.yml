@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres-14
+    #    image: postgres:latest
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - "9008:5432"
+    volumes:
+      - ./create-databases.sh:/docker-entrypoint-initdb.d/create-databases.sh
+      - ./db_persist:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=golangdb
+    hostname: postgres
+  pgadmin:
+    container_name: pgadmin4
+    image: dpage/pgadmin4:6.12
+    restart: unless-stopped
+    ports:
+      - "8088:80"
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGADMIN_DEFAULT_EMAIL=long@vmo.net
+      - PGADMIN_DEFAULT_PASSWORD=sykros
+    hostname: pgadmin
