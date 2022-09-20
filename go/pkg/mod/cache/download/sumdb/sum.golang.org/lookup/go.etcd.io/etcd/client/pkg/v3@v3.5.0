@@ -1,9 +1,0 @@
-5466205
-go.etcd.io/etcd/client/pkg/v3 v3.5.0 h1:2aQv6F436YnN7I4VbI8PPYrBhu+SmrTaADcf8Mi/6PU=
-go.etcd.io/etcd/client/pkg/v3 v3.5.0/go.mod h1:IJHfcCEKxYu1Os13ZdwCwIUTUVGYTSAM3YSwc9/Ac1g=
-
-go.sum database tree
-13086729
-tH3VZEuBSeHoPwyyh9CwI0I+26Gq1dQc0GmRSRAgjGs=
-
-— sum.golang.org Az3gru3THwBUMeAULpSh5lngNNpr2GQgS5dT/DhxJc1u9xk2bGqzeYr98xGYqw9uBorsN5BijFTakrDeH64wQYNh5gc=

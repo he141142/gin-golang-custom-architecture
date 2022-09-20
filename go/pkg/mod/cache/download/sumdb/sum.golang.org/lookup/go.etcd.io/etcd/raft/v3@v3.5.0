@@ -1,9 +1,0 @@
-5466220
-go.etcd.io/etcd/raft/v3 v3.5.0 h1:kw2TmO3yFTgE+F0mdKkG7xMxkit2duBDa2Hu6D/HMlw=
-go.etcd.io/etcd/raft/v3 v3.5.0/go.mod h1:UFOHSIvO/nKwd4lhkwabrTD3cqW5yVyYYf/KlD00Szc=
-
-go.sum database tree
-13080358
-YnVdHOBi9nLcrAlwXQNIgGIEfADYFIjKFihReqR93CM=
-
-— sum.golang.org Az3grtJNUy8wKSohneL5+WBJBh1899sflNS0cOW4vvS4NkaIhqBK3ZWXwSz18WhlGvXIg5S6ixRnbZWuORCaKe2UJgc=
