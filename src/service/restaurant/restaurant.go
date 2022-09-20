@@ -1,16 +1,16 @@
 package restaurant
 
 import (
-	"sykros-pro/gopro/src/database/model"
 	"gorm.io/gorm"
+	"sykros-pro/gopro/src/database/model"
 )
 
 type restaurantService interface {
-	createRestaurant(restaurant *model.Restaurant) (error,model.Restaurant)
+	createRestaurant(restaurant *model.Restaurant) (error, model.Restaurant)
+	getAllRestaurant()
 }
 
 type RestaurantService struct {
 	restaurantService
 	Db *gorm.DB
 }
-

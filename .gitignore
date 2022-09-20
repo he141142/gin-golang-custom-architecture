@@ -108,5 +108,5 @@ internal/.DS_Store
 tmp/**
 go.sum
 go
-db_persit
+db_persist
 
