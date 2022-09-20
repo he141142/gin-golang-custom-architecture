@@ -1,15 +1,15 @@
 package restaurants
 
 import (
+	"github.com/fatih/structs"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sykros-pro/gopro/src/constants/response"
 	"sykros-pro/gopro/src/database/model"
-	"sykros-pro/gopro/src/github.com/fatih/structs"
 	"sykros-pro/gopro/src/share/errorHandling"
 )
 
-func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.Context){
+func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.Context) {
 	return func(context *gin.Context) {
 		var data model.Restaurant
 
@@ -31,8 +31,7 @@ func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.C
 	}
 }
 
-
-func (restaurantRouter *RestaurantRouter) getRestaurantById() func(context *gin.Context){
+func (restaurantRouter *RestaurantRouter) getRestaurantById() func(context *gin.Context) {
 	return func(context *gin.Context) {
 		var data model.Restaurant
 

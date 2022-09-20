@@ -7,7 +7,7 @@ import (
 
 type restaurantService interface {
 	createRestaurant(restaurant *model.Restaurant) (error, model.Restaurant)
-	getAllRestaurant()
+	getAllRestaurant(db *gorm.DB) []*RestaurantDto
 }
 
 type RestaurantService struct {
