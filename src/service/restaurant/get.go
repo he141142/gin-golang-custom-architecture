@@ -1,15 +1,49 @@
 package restaurant
 
 import (
+	"database/sql"
+	"fmt"
 	"gorm.io/gorm"
+	"sykros-pro/gopro/go/pkg/mod/github.com/pkg/errors"
 	"sykros-pro/gopro/src/utils"
 	"time"
 )
 
-func (r *RestaurantService) GetAllRestaurant(db *gorm.DB) []*RestaurantDto {
+func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelper) (*RestaurantDtoPaginated, error) {
 	rawlSql := `SELECT * FROM restaurants`
-	query := db.Raw(rawlSql)
-	return r.getRestaurantsHelper(query)
+	countRawlSql := fmt.Sprintf(`%s  LIMIT @limit OFFSET @offset; `, rawlSql)
+	errChan := make(chan error)
+	restaurantChan := make(chan []*RestaurantDto)
+	paginateChan := make(chan *utils.PaginateDto)
+	go func() {
+		rawlCountSql := fmt.Sprintf(`select count(*) total from ( %s ) as result;`, rawlSql)
+		countQuery := db.Raw(rawlCountSql)
+		paginateDto, err := p.GetTotalItemsCount(countQuery)
+		if err != nil {
+			errChan <- err
+		}
+		paginateChan <- paginateDto
+	}()
+
+	go func() {
+		query := db.Raw(countRawlSql, sql.Named("limit", p.Limit), sql.Named("offset", p.Offset))
+		restaurant := r.getRestaurantsHelper(query)
+		restaurantChan <- restaurant
+	}()
+
+	var response = &RestaurantDtoPaginated{}
+
+	for i := 0; i < 2; i++ {
+		select {
+		case res := <-restaurantChan:
+			response.restaurants = res
+		case res := <-paginateChan:
+			utils.SetPaginateParam(res, response)
+		case res := <-errChan:
+			return nil, errors.New(res.Error())
+		}
+	}
+	return response, nil
 }
 
 func (r *RestaurantService) getRestaurantsHelper(db *gorm.DB) []*RestaurantDto {

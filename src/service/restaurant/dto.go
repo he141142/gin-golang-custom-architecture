@@ -1,6 +1,9 @@
 package restaurant
 
-import "time"
+import (
+	"sykros-pro/gopro/src/utils"
+	"time"
+)
 
 type RestaurantDto struct {
 	OwnerId          uint64                 `json:"owner_id"`
@@ -16,8 +19,9 @@ type RestaurantDto struct {
 	UpdatedAt        time.Time              `json:"updated_at"`
 }
 
-type FullResponseObject struct {
-	RestaurantDto
+type RestaurantDtoPaginated struct {
+	utils.PaginateDto
+	restaurants []*RestaurantDto
 }
 
 type AllRestaurantDto struct {

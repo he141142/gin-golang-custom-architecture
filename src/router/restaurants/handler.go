@@ -8,6 +8,7 @@ import (
 	"sykros-pro/gopro/src/database/model"
 	"sykros-pro/gopro/src/service/restaurant"
 	"sykros-pro/gopro/src/share/errorHandling"
+	"sykros-pro/gopro/src/utils"
 )
 
 func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.Context) {
@@ -34,7 +35,9 @@ func (restaurantRouter *RestaurantRouter) createRestaurant() func(context *gin.C
 
 func (restaurantRouter *RestaurantRouter) getAllRestaurants() func(context *gin.Context) {
 	return func(context *gin.Context) {
-		restaurantsData := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db)
+		paginateHelper := &utils.PaginateHelper{}
+		paginateHelper.Processing(context,utils.LIMIT_OFFSET)
+		restaurantsData := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db,paginateHelper)
 		dataresponse := response.BaseResponseData[restaurant.AllRestaurantDto](&restaurant.AllRestaurantDto{
 			Restaurants: restaurantsData,
 		})
