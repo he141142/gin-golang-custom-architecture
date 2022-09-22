@@ -2,11 +2,13 @@ package utils
 
 import (
 	"database/sql"
+	errors2 "errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go/constant"
 	"gorm.io/gorm"
 	"strconv"
-	"sykros-pro/gopro/go/pkg/mod/github.com/pkg/errors"
+	"sykros-pro/gopro/src/utils/helper"
 )
 
 type PagingProcess interface {
@@ -86,7 +88,7 @@ func (p *PaginateHelper) GetTotalItemsCount(query *gorm.DB) (*PaginateDto, error
 			}
 		}
 	}
-	return nil, errors.New("error while counting total")
+	return nil, errors2.New("error while counting total")
 }
 
 func RawSQLQueryScanRowsToMapHandler(query *gorm.DB, source interface{}) {
@@ -131,14 +133,23 @@ func (p *PaginateHelper) Processing(c *gin.Context, paginateType PaginateParam) 
 	p.initialize(p.Page, p.ElmPerPage, paginateType, p.DetachPagingParam(), c)
 }
 
-func SetPaginateParam[T struct {
-	Page       int
-	Size       int
-	TotalItems int
-	TotalPages int
-}](source *PaginateDto, target T) {
-	target.Page = source.Page
-	target.Size = source.Size
-	target.TotalItems = source.TotalItems
-	target.TotalPages = source.TotalPages
+func (p *PaginateHelper) SetPagingParam(source, target any) any {
+	sourceInstance, err := helper.InitializeGenericUtilities[map[string]interface{}, any](source)
+	if err != nil {
+		//handle Error
+	}
+	sourceInstance = sourceInstance.(*helper.GenericStructUtilities)
+	targetInstance, err := helper.InitializeGenericUtilities[map[string]interface{}, any](target)
+	if err != nil {
+		//handle Error
+	}
+	targetInstance.Setter("Page", sourceInstance.GetDataInJSON()["Page"], constant.Int)
+	targetInstance.Setter("Size", sourceInstance.GetDataInJSON()["Size"], constant.Int)
+	targetInstance.Setter("TotalItems", sourceInstance.GetDataInJSON()["TotalItems"], constant.Int)
+	targetInstance.Setter("TotalPages", sourceInstance.GetDataInJSON()["TotalPages"], constant.Int)
+	err = targetInstance.DecodeDefault()
+	if err != nil {
+		//handle Error
+	}
+	return targetInstance.GetData()
 }

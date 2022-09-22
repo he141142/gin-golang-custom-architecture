@@ -20,10 +20,10 @@ type RestaurantDto struct {
 }
 
 type RestaurantDtoPaginated struct {
-	utils.PaginateDto
+	    *utils.PaginateDto
 	restaurants []*RestaurantDto
 }
 
 type AllRestaurantDto struct {
-	Restaurants []*RestaurantDto
+	*RestaurantDtoPaginated
 }

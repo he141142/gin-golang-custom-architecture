@@ -2,9 +2,9 @@ package restaurant
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"sykros-pro/gopro/go/pkg/mod/github.com/pkg/errors"
 	"sykros-pro/gopro/src/utils"
 	"time"
 )
@@ -32,17 +32,22 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 	}()
 
 	var response = &RestaurantDtoPaginated{}
-
 	for i := 0; i < 2; i++ {
 		select {
 		case res := <-restaurantChan:
 			response.restaurants = res
 		case res := <-paginateChan:
-			utils.SetPaginateParam(res, response)
+			response.Page = res.Page
+			response.Size = res.Size
+			response.TotalItems = res.TotalItems
+			response.TotalPages = res.TotalPages
+			cast := p.SetPagingParam(res, response)
+			response = cast.(*RestaurantDtoPaginated)
 		case res := <-errChan:
 			return nil, errors.New(res.Error())
 		}
 	}
+
 	return response, nil
 }
 
