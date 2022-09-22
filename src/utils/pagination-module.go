@@ -134,12 +134,12 @@ func (p *PaginateHelper) Processing(c *gin.Context, paginateType PaginateParam) 
 }
 
 func (p *PaginateHelper) SetPagingParam(source, target any) any {
-	sourceInstance, err := helper.InitializeGenericUtilities[map[string]interface{}, any](source)
+	sourceInstance, err := helper.InitializeGenericUtilities(source)
 	if err != nil {
 		//handle Error
 	}
 	sourceInstance = sourceInstance.(*helper.GenericStructUtilities)
-	targetInstance, err := helper.InitializeGenericUtilities[map[string]interface{}, any](target)
+	targetInstance, err := helper.InitializeGenericUtilities(target)
 	if err != nil {
 		//handle Error
 	}

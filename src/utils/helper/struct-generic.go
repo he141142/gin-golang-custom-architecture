@@ -15,7 +15,10 @@ type InterFace interface {
 	GetDataInJSON() map[string]interface{}
 }
 
-type GenericStructUtilities[T map[string]interface{}, V any] struct {
+type T = map[string]interface{}
+type V = any
+
+type GenericStructUtilities struct {
 	DataInJSON     T
 	Data           V
 	DataJsonString string
@@ -23,8 +26,8 @@ type GenericStructUtilities[T map[string]interface{}, V any] struct {
 	InterFace
 }
 
-func InitializeGenericUtilities[T map[string]interface{}, V any](obj V) (InterFace, error) {
-	GenericStructUtilities := &GenericStructUtilities[T, V]{}
+func InitializeGenericUtilities(obj any) (InterFace, error) {
+	GenericStructUtilities := &GenericStructUtilities{}
 	GenericStructUtilities.Data = obj
 	if err := GenericStructUtilities.Encode(); err != nil {
 		return nil, err
@@ -34,10 +37,6 @@ func InitializeGenericUtilities[T map[string]interface{}, V any](obj V) (InterFa
 	}
 	return GenericStructUtilities, nil
 }
-
-//func CastingAcceptKindDetect(g *GenericStructUtilities) bool {
-//
-//}
 
 func (g *GenericStructUtilities) Encode() error {
 	b, err := json.Marshal(g.Data)
@@ -74,9 +73,6 @@ func (g *GenericStructUtilities) GetDataInJSON() map[string]interface{} {
 	return g.DataInJSON
 }
 
-//func (g *GenericStructUtilities) GetData() any {
-//	return g.Data
-//}
 
 func (g *GenericStructUtilities) Setter(field string, value any, valType constant.Kind) {
 	if valType == constant.Int {
