@@ -1,49 +1,97 @@
 package logger
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 	"os"
+	"sykros-pro/gopro/src/utils"
+	"sykros-pro/gopro/src/utils/helper"
+	"time"
+)
+
+type LogType int64
+
+const (
+	INFO  LogType = 0
+	WARN          = 1
+	ERROR         = 2
 )
 
 type LoggerService interface {
-	initLogger()
-	error(msg string)
-	warn(msg string)
-	info(msg string)
+	InitLogger(context string)
 	GetContext() string
+	commonLogger(data map[string]interface{}) *log.Entry
+	Info(data map[string]interface{})
+	Warn(data map[string]interface{})
+	Error(data map[string]interface{})
+	LogWithMsg(msg string, typeLog LogType)
 }
 
 type ViperLogger struct {
 	LoggerService
-	infoLog  *log.Logger
-	errorLog *log.Logger
-	warnLog  *log.Logger
-	context  string
+	context string
+	logger  *log.Logger
 }
 
-func (l *ViperLogger) error(msg string) {
-	l.errorLog.Printf("[%s]%s\n", l.context, msg)
-}
-func (l *ViperLogger) warn(msg string) {
-	l.warnLog.Printf("[%s]%s\n", l.context, msg)
-}
-func (l *ViperLogger) info(msg string) {
-	l.infoLog.Printf("[%s]%s\n", l.context, msg)
+func (logger *ViperLogger) InitLogger(context string) {
+	logger.context = context
+	logger.logger = log.New()
+	logger.logger.SetFormatter(&log.JSONFormatter{})
+	logger.logger.SetOutput(os.Stdout)
+
 }
 
-func (l *ViperLogger) GetContext() string {
-	return l.context
-}
-
-func InitLogger(context string) LoggerService {
-	loggerInstance := &ViperLogger{}
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
+func (logger *ViperLogger) commonLogger(data map[string]interface{}) *log.Entry {
+	now := time.Now()
+	formatted := helper.GetDateTimeFormatter().
+		FormatByLayout(now, time.RFC3339)
+	defaultObjectMsg := map[string]interface {
+	}{
+		"time-stamp": formatted,
+		"context":    logger.context,
 	}
-	loggerInstance.context = context
-	loggerInstance.infoLog = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	loggerInstance.warnLog = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-	loggerInstance.errorLog = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-	return loggerInstance
+	return logger.logger.WithFields(utils.MergeObject(defaultObjectMsg, data))
+}
+
+func (logger *ViperLogger) GetContext() string {
+	return logger.context
+}
+
+func (logger *ViperLogger) LogWithMsg(msg string, typeLog LogType) {
+	now := time.Now()
+	formatted := helper.GetDateTimeFormatter().
+		FormatByLayout(now, time.RFC3339)
+	defaultObjectMsg := map[string]interface {
+	}{
+		"time-stamp": formatted,
+		"context":    logger.context,
+	}
+	contextLogger := log.WithFields(defaultObjectMsg)
+	switch typeLog {
+	case INFO:
+		contextLogger.Info(msg)
+	case WARN:
+		contextLogger.Warn(msg)
+	case ERROR:
+		contextLogger.Error(msg)
+
+	}
+}
+
+func (logger *ViperLogger) Info(data map[string]interface{}) {
+	logger.commonLogger(data).Info()
+}
+
+func (logger *ViperLogger) Warn(data map[string]interface{}) {
+	logger.commonLogger(data).Info()
+}
+
+func (logger *ViperLogger) Error(data map[string]interface{}) {
+	logger.commonLogger(data).Info()
+}
+
+func LogrusSetup(context string) LoggerService {
+	viperLogger := &ViperLogger{}
+	viperLogger.logger = log.New()
+	viperLogger.InitLogger(context)
+	return viperLogger
 }

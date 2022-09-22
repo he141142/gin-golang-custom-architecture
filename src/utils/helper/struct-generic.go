@@ -73,7 +73,6 @@ func (g *GenericStructUtilities) GetDataInJSON() map[string]interface{} {
 	return g.DataInJSON
 }
 
-
 func (g *GenericStructUtilities) Setter(field string, value any, valType constant.Kind) {
 	if valType == constant.Int {
 		g.DataInJSON[field] = value.(int)

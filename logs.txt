@@ -1,0 +1,6 @@
+INFO: 2022/09/22 14:59:27 logger-module.go:34: [PAGINATE_PROVIDER]Processing to Initialize Paginate
+INFO: 2022/09/22 14:59:27 logger-module.go:44: Detach ParamComplete%!(EXTRA []interface {}=[])
+INFO: 2022/09/22 14:59:27 logger-module.go:44: [      Page %!s(int=         1) ElmPerPage %!s(int=        10)]=%!d(MISSING) %!s(MISSING)=%!d(MISSING)
+INFO: 2022/09/22 15:00:56 logger-module.go:34: [PAGINATE_PROVIDER]Processing to Initialize Paginate
+INFO: 2022/09/22 15:00:56 logger-module.go:44: Detach ParamComplete%!(EXTRA []interface {}=[])
+INFO: 2022/09/22 15:00:56 logger-module.go:44: [      Page %!s(int=         1) ElmPerPage %!s(int=        10)]=%!d(MISSING) %!s(MISSING)=%!d(MISSING)

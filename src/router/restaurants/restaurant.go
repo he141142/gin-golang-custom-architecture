@@ -21,11 +21,13 @@ type RestaurantRouter struct {
 
 func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *gorm.DB) {
 	restaurantRouter.name = name
-	var l logger.LoggerService
-	l = logger.InitLogger("RESTAURANT_SERVICE")
+	var vicePerLogger logger.LoggerService
+	vicePerLogger = logger.LogrusSetup("RESTAURANT_SERVICE")
+	serviceInitializingMsg := vicePerLogger.GetContext()+" Initializing"
+	vicePerLogger.LogWithMsg(serviceInitializingMsg,logger.INFO)
 	restaurantRouter.service = &restaurant2.RestaurantService{
 		Db:     db,
-		Logger: l,
+		Logger: vicePerLogger,
 	}
 	restaurant := r.Group(name)
 	{

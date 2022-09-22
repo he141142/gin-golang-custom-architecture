@@ -49,6 +49,8 @@ func (p *PaginateHelper) initialize(page int, elemPerPage int,
 	paginateType PaginateParam,
 	DetachPagingParam func(c *gin.Context), c *gin.Context) {
 	DetachPagingParam(c)
+
+	fmt.Printf("%10s=%5d %10s=%5d", "Page", p.Page, "ElmPerPage", p.ElmPerPage)
 	p.PagingType = paginateType
 	p.Page = page
 	p.ElmPerPage = elemPerPage
