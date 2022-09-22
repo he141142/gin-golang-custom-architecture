@@ -8,7 +8,9 @@ require (
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/mattn/go-colorable v0.1.6
 	github.com/sirupsen/logrus v1.8.1
+	github.com/ttys3/rotatefilehook v1.0.0
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/gorm v1.23.9
 )
@@ -45,5 +47,6 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

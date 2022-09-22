@@ -1,10 +1,11 @@
 package logger
 
 import (
+	"github.com/mattn/go-colorable"
 	log "github.com/sirupsen/logrus"
-	"os"
+	"github.com/ttys3/rotatefilehook"
+	_ "os"
 	"sykros-pro/gopro/src/utils"
-	"sykros-pro/gopro/src/utils/helper"
 	"time"
 )
 
@@ -33,21 +34,42 @@ type ViperLogger struct {
 }
 
 func (logger *ViperLogger) InitLogger(context string) {
+	rotateFileHook, err := rotatefilehook.NewRotateFileHook(rotatefilehook.RotateFileConfig{
+		Filename:   "logfile.log",
+		MaxSize:    5,
+		MaxBackups: 7,
+		MaxAge:     7,
+		LocalTime:  true,
+		Level:      log.InfoLevel,
+		Formatter:  &log.TextFormatter{FullTimestamp: true},
+	})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	logger.context = context
 	logger.logger = log.New()
-	logger.logger.SetFormatter(&log.JSONFormatter{})
-	logger.logger.SetOutput(os.Stdout)
+	logger.logger.SetFormatter(&log.TextFormatter{
+		ForceColors:     true,
+		DisableColors:   false,
+		FullTimestamp:   true,
+		TimestampFormat: time.RFC3339,
+		FieldMap: log.FieldMap{
+			"FieldKeyTime":  "@timestamp",
+			"FieldKeyLevel": "@level",
+			"FieldKeyMsg":   "@message",
+			"FieldKeyFunc":  "@caller",
+		},
+	})
+	logger.logger.AddHook(rotateFileHook)
+	logger.logger.SetOutput(colorable.NewColorableStdout())
 
 }
 
 func (logger *ViperLogger) commonLogger(data map[string]interface{}) *log.Entry {
-	now := time.Now()
-	formatted := helper.GetDateTimeFormatter().
-		FormatByLayout(now, time.RFC3339)
 	defaultObjectMsg := map[string]interface {
 	}{
-		"time-stamp": formatted,
-		"context":    logger.context,
+		"context": logger.context,
 	}
 	return logger.logger.WithFields(utils.MergeObject(defaultObjectMsg, data))
 }
@@ -57,15 +79,7 @@ func (logger *ViperLogger) GetContext() string {
 }
 
 func (logger *ViperLogger) LogWithMsg(msg string, typeLog LogType) {
-	now := time.Now()
-	formatted := helper.GetDateTimeFormatter().
-		FormatByLayout(now, time.RFC3339)
-	defaultObjectMsg := map[string]interface {
-	}{
-		"time-stamp": formatted,
-		"context":    logger.context,
-	}
-	contextLogger := log.WithFields(defaultObjectMsg)
+	contextLogger := logger.logger.WithFields(map[string]interface{}{})
 	switch typeLog {
 	case INFO:
 		contextLogger.Info(msg)
@@ -90,8 +104,24 @@ func (logger *ViperLogger) Error(data map[string]interface{}) {
 }
 
 func LogrusSetup(context string) LoggerService {
+
 	viperLogger := &ViperLogger{}
 	viperLogger.logger = log.New()
 	viperLogger.InitLogger(context)
 	return viperLogger
 }
+
+//type TestStruct struct {
+//	Index int
+//	Flag bool
+//}
+//
+//func Test(v any){
+//	switch  v.(type) {
+//	case *TestStruct:
+//		if v.(*TestStruct).Flag == false {
+//			v.(*TestStruct).Flag = true
+//			v.(*TestStruct).Index = 10
+//		}
+//	}
+//}
