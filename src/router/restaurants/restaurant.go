@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	restaurant2 "sykros-pro/gopro/src/service/restaurant"
+	"sykros-pro/gopro/src/share/logger"
 )
 
 type handleRestaurant interface {
@@ -20,8 +21,11 @@ type RestaurantRouter struct {
 
 func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *gorm.DB) {
 	restaurantRouter.name = name
+	var l logger.LoggerService
+	l = logger.InitLogger("RESTAURANT_SERVICE")
 	restaurantRouter.service = &restaurant2.RestaurantService{
-		Db: db,
+		Db:     db,
+		Logger: l,
 	}
 	restaurant := r.Group(name)
 	{
