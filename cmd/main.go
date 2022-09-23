@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"sykros-pro/gopro/src/router/restaurants"
+	"sykros-pro/gopro/src/utils/helper"
 )
 import (
 	"github.com/gin-gonic/gin"
@@ -16,6 +17,29 @@ import (
 )
 
 func appInit() {
+	type worker struct{
+		name string
+		age int
+		id int
+		identityNumber string
+	}
+
+	workerA := &worker{
+		name: "Michael J.Viper",
+	}
+
+	workerB := &worker{
+		age: 36,
+		id: 34,
+		identityNumber: "23232323",
+	}
+
+	megerModule := helper.MergeModuleInitialize(workerB,workerA)
+	mergeErr := megerModule.MergeTwoStruct(workerA,workerB)
+	if mergeErr!=nil  {
+		fmt.Println(workerA)
+	}
+
 
 	err := godotenv.Load(".env")
 	if err != nil {

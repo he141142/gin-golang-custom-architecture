@@ -6,11 +6,12 @@ import (
 )
 
 type MergeModuleImplm interface {
-	Merge(dst, src interface{}) error
+	MergeTwoStruct(dst, src interface{}) error
 	deepMerge(dst, src reflect.Value, deepLevel int) error
 	getSrcStructName() string
 	getDstStructName() string
 	ifStructHasMergeableFields(field reflect.Value) (canExport bool)
+	Merge() (err error)
 }
 
 type MergeModule struct {
@@ -25,7 +26,7 @@ type MergeModule struct {
 	dst: Desination <must pass as pointer for Editable>
 	src: Source <Source to implement coppy and set to dst>
 */
-func (m *MergeModule) Merge(dst, src interface{}) error {
+func (m *MergeModule) MergeTwoStruct(dst, src interface{}) error {
 	var (
 		dstConvert reflect.Value
 		srcConvert reflect.Value
@@ -46,6 +47,14 @@ func (m *MergeModule) Merge(dst, src interface{}) error {
 	return nil
 }
 
+func (m *MergeModule) Merge() (err error) {
+	err = m.MergeTwoStruct(&m.dst, m.src)
+	if err != nil {
+		return
+	}
+	return nil
+}
+
 /*
 	Version1 merge struct
 */
@@ -54,16 +63,19 @@ func (m *MergeModule) deepMerge(dst, src reflect.Value, deepLevel int) (err erro
 	case reflect.Struct:
 		if m.ifStructHasMergeableFields(dst) {
 			for i, n := 0, dst.NumField(); i < n; i++ {
-				if err = m.deepMerge(dst.Field(i), src, deepLevel+1); err != nil {
+				if err = m.deepMerge(dst.Field(i), src.Field(i), deepLevel+1); err != nil {
 					return
 				}
 			}
 		} else if dst.CanSet() && !isEmpty(src) {
-
+			dst.Set(src)
 		}
+	//setValue for field have base type
 	default:
+		if mustSet := isEmpty(dst) && !isEmpty(src); mustSet {
+			dst.Set(src)
+		}
 	}
-
 	//check MergeAbleField
 	return nil
 
