@@ -10,5 +10,4 @@ func MergeObject(SetOfObject ...map[string]interface{}) map[string]interface{} {
 		}
 	}
 	return objectMerged
-
 }

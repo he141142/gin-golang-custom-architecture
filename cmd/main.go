@@ -17,7 +17,6 @@ import (
 
 func appInit() {
 
-
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -48,6 +47,7 @@ func runService(db *gorm.DB) error {
 }
 
 func main() {
+
 	appInit()
 }
 
