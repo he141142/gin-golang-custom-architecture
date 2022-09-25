@@ -42,7 +42,9 @@ func (t *TestModule) Run(moduleType ModuleType) {
 	switch moduleType {
 	case MERGE_STRUCT:
 		type worker struct {
-			PagingDto
+			Page           int
+			Limit          int
+			Offset         int
 			Name           string
 			Age            int
 			Id             int
@@ -50,11 +52,7 @@ func (t *TestModule) Run(moduleType ModuleType) {
 			InterfaceTest  interface{}
 		}
 
-		pgDto := &PagingDto2{}
-
-		pgDto.Page = 4
-		pgDto.Limit = 40
-		pgDto.Offset = 239
+		pgDto := &PagingDto{}
 
 		workerA := &worker{
 			Name: "Michael J.Viper",

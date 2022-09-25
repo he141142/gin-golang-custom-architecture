@@ -84,7 +84,7 @@ func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}
 			}
 		case k == "address":
 			if v != nil {
-				bind.Address = v.(string)
+				bind.Addr = v.(string)
 			}
 		case k == "name":
 			if v != nil {
@@ -108,13 +108,13 @@ func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}
 
 func (r *RestaurantService) GetRestaurantById(db *gorm.DB, id int) (*RestaurantDto, error) {
 	rawlSql := `SELECT * FROM restaurants where id = @id;`
-	query := db.Raw(rawlSql, sql.Named("id",id))
-	restaurant,err := r.getRestaurantsHelper(query)
-	if  err!=nil{
-		return nil,common.CanNotGetEntity("restaurants",err)
+	query := db.Raw(rawlSql, sql.Named("id", id))
+	restaurant, err := r.getRestaurantsHelper(query)
+	if err != nil {
+		return nil, common.CanNotGetEntity("restaurants", err)
 	}
-	if len(restaurant) ==0 {
-		return nil,common.CanNotGetEntity("restaurants",errors.New("Cant found"))
+	if len(restaurant) == 0 {
+		return nil, common.CanNotGetEntity("restaurants", errors.New("Cant found"))
 	}
-	return restaurant[0],nil
+	return restaurant[0], nil
 }
