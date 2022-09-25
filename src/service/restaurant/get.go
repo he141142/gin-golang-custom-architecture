@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
+	"sykros-pro/gopro/src/common"
 	"sykros-pro/gopro/src/utils"
 	"time"
 )
@@ -27,7 +28,10 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 
 	go func() {
 		query := db.Raw(countRawlSql, sql.Named("limit", p.Limit), sql.Named("offset", p.Offset))
-		restaurant := r.getRestaurantsHelper(query)
+		restaurant, err := r.getRestaurantsHelper(query)
+		if err != nil {
+			errChan <- err
+		}
 		restaurantChan <- restaurant
 	}()
 
@@ -46,18 +50,21 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 	return response, nil
 }
 
-func (r *RestaurantService) getRestaurantsHelper(db *gorm.DB) []*RestaurantDto {
+func (r *RestaurantService) getRestaurantsHelper(query *gorm.DB) ([]*RestaurantDto, error) {
 	var dbResult []map[string]interface{}
-	utils.RawSQLScanner(db, &dbResult)
+	utils.RawSQLScanner(query, &dbResult)
+	fmt.Println(dbResult)
 	restaurantsList := make([]*RestaurantDto, 0)
 	for _, data := range dbResult {
 		if id, found := data["id"]; found && id != nil {
 			restaurantRes := &RestaurantDto{}
 			r.bindRestaurantBaseData(data, restaurantRes)
 			restaurantsList = append(restaurantsList, restaurantRes)
+		} else {
+			return nil, errors.New("No Restaurants Found")
 		}
 	}
-	return restaurantsList
+	return restaurantsList, nil
 }
 
 func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}, bind *RestaurantDto) {
@@ -97,4 +104,17 @@ func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}
 			}
 		}
 	}
+}
+
+func (r *RestaurantService) GetRestaurantById(db *gorm.DB, id int) (*RestaurantDto, error) {
+	rawlSql := `SELECT * FROM restaurants where id = @id;`
+	query := db.Raw(rawlSql, sql.Named("id",id))
+	restaurant,err := r.getRestaurantsHelper(query)
+	if  err!=nil{
+		return nil,common.CanNotGetEntity("restaurants",err)
+	}
+	if len(restaurant) ==0 {
+		return nil,common.CanNotGetEntity("restaurants",errors.New("Cant found"))
+	}
+	return restaurant[0],nil
 }

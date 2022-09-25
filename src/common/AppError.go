@@ -2,15 +2,19 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"reflect"
 )
 
 type Errkey int64
 
 const (
-	DB_ERR          Errkey = 0
-	INTERNAL               = 1
-	INVALID_REQUEST        = 2
+	DB_ERR             Errkey = 0
+	INTERNAL                  = 1
+	INVALID_REQUEST           = 2
+	INVALID_PARAM             = 3
+	CAN_NOT_GET_ENTITY        = 4
 )
 
 var (
@@ -19,7 +23,7 @@ var (
 
 func getErrKey(key Errkey) string {
 	return [...]string{
-		"DB_ERR", "INTERNAL_SERVER_ERROR", "INVALID_REQUEST",
+		"DB_ERR", "INTERNAL_SERVER_ERROR", "INVALID_REQUEST", "INVALID_PARAM", "CAN_NOT_GET_ENTITY",
 	}[key]
 }
 
@@ -81,5 +85,24 @@ func ErrDB(e error) *AppError {
 		e.Error(),
 		getErrKey(DB_ERR),
 		e)
+}
 
+func InvalidTypeOfParam(param interface{}, expectType reflect.Kind, err error) *AppError {
+	msg := fmt.Sprintf("Invalid Param %v of type %v", param, reflect.ValueOf(param), expectType)
+	return NewErrorResponse(
+		msg,
+		err.Error(),
+		getErrKey(INVALID_PARAM),
+		err,
+	)
+}
+
+func CanNotGetEntity(entity string, err error) *AppError {
+	fmt.Printf("Can not get %s\n", entity)
+	return NewErrorResponse(
+		"Can not get "+entity,
+		err.Error(),
+		getErrKey(CAN_NOT_GET_ENTITY),
+		err,
+	)
 }

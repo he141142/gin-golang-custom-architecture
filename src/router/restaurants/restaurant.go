@@ -33,6 +33,8 @@ func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *
 	{
 		restaurant.POST("", restaurantRouter.createRestaurant())
 		restaurant.GET("", restaurantRouter.getAllRestaurants())
+		restaurant.GET("/:id", restaurantRouter.getRestaurantById())
+
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 
 func RawSQLScanner(query *gorm.DB, source interface{}) {
 	rows, err := query.Rows()
+	fmt.Println(rows)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -24,16 +25,3 @@ func RawSQLScanner(query *gorm.DB, source interface{}) {
 		}
 	}
 }
-
-//
-//type Ordered interface {
-//	uint64 | string | time.Time | float32
-//}
-//
-//func GenericTypeCast[T](inputVal any, ref T) {
-//	val, err := inputVal.(T)
-//	if !err {
-//		ref = val
-//	}
-//	//ref = nil
-//}
