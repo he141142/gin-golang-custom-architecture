@@ -21,16 +21,40 @@ type addictionAlInterFace struct {
 	id int
 }
 
+type PagingDto struct {
+	Page   int
+	Limit  int
+	Offset int
+}
+
+type PagingDto2 struct {
+	PagingDto
+}
+
+type CustomStructA struct {
+	PagingDto
+	Age         int
+	Id          int
+	Description string
+}
+
 func (t *TestModule) Run(moduleType ModuleType) {
 	switch moduleType {
 	case MERGE_STRUCT:
 		type worker struct {
+			PagingDto
 			Name           string
 			Age            int
 			Id             int
 			IdentityNumber string
 			InterfaceTest  interface{}
 		}
+
+		pgDto := &PagingDto2{}
+
+		pgDto.Page = 4
+		pgDto.Limit = 40
+		pgDto.Offset = 239
 
 		workerA := &worker{
 			Name: "Michael J.Viper",
@@ -40,13 +64,15 @@ func (t *TestModule) Run(moduleType ModuleType) {
 			Age:            36,
 			Id:             34,
 			IdentityNumber: "23232323",
-			InterfaceTest:  addictionAlInterFace{
+			InterfaceTest: addictionAlInterFace{
 				id: 34,
 			},
 		}
-
-		megerModule := helper.MergeModuleInitialize(workerA, workerB)
-		mergeErr := megerModule.MergeTwoStruct(workerA, workerB,&helper.Config{})
+		//workerB.limit = 10
+		//workerB.offset= 9
+		fmt.Println(workerB)
+		megerModule := helper.MergeModuleInitialize(workerA, pgDto)
+		mergeErr := megerModule.MergeTwoStruct(workerA, pgDto, &helper.Config{})
 		if mergeErr != nil {
 			println(mergeErr)
 		}

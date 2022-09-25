@@ -38,6 +38,7 @@ func (restaurantRouter *RestaurantRouter) getAllRestaurants() func(context *gin.
 		paginateHelper := &utils.PaginateHelper{}
 		//prepare for paginate parameter
 		paginateHelper.Processing(context, utils.LIMIT_OFFSET)
+		println(paginateHelper.Page,paginateHelper.Limit,paginateHelper.Offset)
 		restaurantsData, _ := restaurantRouter.service.GetAllRestaurant(restaurantRouter.service.Db, paginateHelper)
 		dataresponse := response.BaseResponseData[restaurant.AllRestaurantDto](&restaurant.AllRestaurantDto{
 			restaurantsData,

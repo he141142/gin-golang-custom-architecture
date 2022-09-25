@@ -68,7 +68,7 @@ func (m *MergeModule) MergeTwoStruct(dst, src interface{}, config *Config) error
 		fmt.Println("kindOfSrcValue Is Pointer")
 		srcConvert = srcValue.Elem()
 	}
-	fmt.Printf("dst Value after convert: %v   src Value after convert: %v\n", dstConvert, srcConvert)
+	fmt.Printf("dst Value after convert: %v\nsrc Value after convert: %v\n", dstConvert, srcConvert)
 	if checkErr := m.deepMerge(dstConvert, srcConvert, 0, config); checkErr != nil {
 		fmt.Println(checkErr)
 		return checkErr
@@ -88,6 +88,7 @@ func (m *MergeModule) Merge() (err error) {
 	Version1 merge struct
 */
 func (m *MergeModule) deepMerge(dst, src reflect.Value, deepLevel int, config *Config) (err error) {
+	fmt.Printf("DeepLevel: %v\n", deepLevel)
 
 	Override := config.Override
 	//AppendSlice := config.AppendSlice
@@ -98,7 +99,10 @@ func (m *MergeModule) deepMerge(dst, src reflect.Value, deepLevel int, config *C
 	switch dst.Kind() {
 	case reflect.Struct:
 		fmt.Printf("Kind of destination is %v :::Value: %v\n", dst.Kind(), dst)
-		fmt.Printf("Amount Of Field is %v\n", dst.NumField())
+		fmt.Printf("Kind of src is %v :::Value: %v\n", src.Kind(), src)
+		fmt.Printf("Amount Of Dst Field is %v\n", dst.NumField())
+		fmt.Printf("Amount Of Src Field is %v\n", src.NumField())
+
 		if m.ifStructHasMergeableFields(dst) {
 			for i, n := 0, dst.NumField(); i < n; i++ {
 				if err = m.deepMerge(dst.Field(i), src.Field(i), deepLevel+1, config); err != nil {
@@ -158,6 +162,7 @@ func (m *MergeModule) deepMerge(dst, src reflect.Value, deepLevel int, config *C
 	default:
 		fmt.Printf("[CASE][default]dst before set :%v\n", dst)
 		if mustSet := (isEmpty(dst) || Override) && (!isEmpty(src) || OverwriteWithEmptySrc); mustSet {
+			fmt.Println("Must set")
 			fmt.Printf("[CASE][default]dst before set :%v\n", dst)
 			dst.Set(src)
 			fmt.Printf("[CASE][default]dst after set :%v\n", dst)

@@ -6,7 +6,6 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"sykros-pro/gopro/src/router/restaurants"
-	"sykros-pro/gopro/src/share/testModule"
 )
 import (
 	"github.com/gin-gonic/gin"
@@ -48,8 +47,8 @@ func runService(db *gorm.DB) error {
 }
 
 func main() {
-	testModule.NewTest().Run(testModule.MERGE_STRUCT)
-	//appInit()
+	//testModule.NewTest().Run(testModule.MERGE_STRUCT)
+	appInit()
 
 }
 

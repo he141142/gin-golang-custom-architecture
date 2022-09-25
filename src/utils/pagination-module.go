@@ -5,10 +5,8 @@ import (
 	errors2 "errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"go/constant"
 	"gorm.io/gorm"
 	"strconv"
-	"sykros-pro/gopro/src/utils/helper"
 )
 
 type PagingProcess interface {
@@ -30,8 +28,8 @@ const (
 type PaginateDto struct {
 	Page       int
 	Size       int
-	TotalItems int
-	TotalPages int
+	TotalItems int64
+	TotalPages int64
 }
 
 type PaginateHelper struct {
@@ -45,17 +43,14 @@ type PaginateHelper struct {
 	PagingType PaginateParam
 }
 
-func (p *PaginateHelper) initialize(page int, elemPerPage int,
+func (p *PaginateHelper) initialize(
 	paginateType PaginateParam,
 	DetachPagingParam func(c *gin.Context), c *gin.Context) {
 	DetachPagingParam(c)
-
-	fmt.Printf("%10s=%5d %10s=%5d", "Page", p.Page, "ElmPerPage", p.ElmPerPage)
+	fmt.Printf("%10s=%5d \n%10s=%5d\n", "Page", p.Page, "ElmPerPage", p.ElmPerPage)
 	p.PagingType = paginateType
-	p.Page = page
-	p.ElmPerPage = elemPerPage
 	if paginateType == LIMIT_OFFSET {
-		p.Limit = elemPerPage
+		p.Limit = p.ElmPerPage
 		p.Offset = p.Limit + p.Page - 1
 	}
 	if paginateType == NESTED_OBJECT {
@@ -82,8 +77,8 @@ func (p *PaginateHelper) GetTotalItemsCount(query *gorm.DB) (*PaginateDto, error
 	if query.RowsAffected > 0 {
 		for _, data := range dbResult {
 			if total, found := data["total"]; found && total != nil {
-				PagingDto.TotalItems = total.(int)
-				PagingDto.TotalPages = p.GetTotalPages(PagingDto.TotalItems)
+				PagingDto.TotalItems = total.(int64)
+				PagingDto.TotalPages = int64(p.GetTotalPages(int(PagingDto.TotalItems)))
 				PagingDto.Page = p.Page
 				PagingDto.Size = p.ElmPerPage
 				return PagingDto, nil
@@ -132,26 +127,11 @@ func convertQueryParam(c *gin.Context, name string, defaultValue int) int {
 }
 
 func (p *PaginateHelper) Processing(c *gin.Context, paginateType PaginateParam) {
-	p.initialize(p.Page, p.ElmPerPage, paginateType, p.DetachPagingParam(), c)
+	p.initialize( paginateType, p.DetachPagingParam(), c)
+	fmt.Printf("%10s=%5d \n%10s=%5d\n", "Page", p.Page, "ElmPerPage", p.ElmPerPage)
+
 }
 
-func (p *PaginateHelper) SetPagingParam(source, target any) any {
-	sourceInstance, err := helper.InitializeGenericUtilities(source)
-	if err != nil {
-		//handle Error
-	}
-	sourceInstance = sourceInstance.(*helper.GenericStructUtilities)
-	targetInstance, err := helper.InitializeGenericUtilities(target)
-	if err != nil {
-		//handle Error
-	}
-	targetInstance.Setter("Page", sourceInstance.GetDataInJSON()["Page"], constant.Int)
-	targetInstance.Setter("Size", sourceInstance.GetDataInJSON()["Size"], constant.Int)
-	targetInstance.Setter("TotalItems", sourceInstance.GetDataInJSON()["TotalItems"], constant.Int)
-	targetInstance.Setter("TotalPages", sourceInstance.GetDataInJSON()["TotalPages"], constant.Int)
-	err = targetInstance.DecodeDefault()
-	if err != nil {
-		//handle Error
-	}
-	return targetInstance.GetData()
+func (p *PaginateHelper) SetPagingParam(source, target interface{}) {
+
 }

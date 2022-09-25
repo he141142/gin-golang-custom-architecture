@@ -20,8 +20,8 @@ type RestaurantDto struct {
 }
 
 type RestaurantDtoPaginated struct {
-	    *utils.PaginateDto
-	restaurants []*RestaurantDto
+	Paginate    *utils.PaginateDto `json:",inline"`
+	Restaurants []*RestaurantDto   `json:"restaurants"`
 }
 
 type AllRestaurantDto struct {

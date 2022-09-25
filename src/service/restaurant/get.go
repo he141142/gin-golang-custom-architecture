@@ -35,14 +35,9 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 	for i := 0; i < 2; i++ {
 		select {
 		case res := <-restaurantChan:
-			response.restaurants = res
+			response.Restaurants = res
 		case res := <-paginateChan:
-			response.Page = res.Page
-			response.Size = res.Size
-			response.TotalItems = res.TotalItems
-			response.TotalPages = res.TotalPages
-			cast := p.SetPagingParam(res, response)
-			response = cast.(*RestaurantDtoPaginated)
+			response.Paginate = res
 		case res := <-errChan:
 			return nil, errors.New(res.Error())
 		}
