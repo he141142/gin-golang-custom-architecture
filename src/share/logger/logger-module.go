@@ -104,7 +104,6 @@ func (logger *ViperLogger) Error(data map[string]interface{}) {
 }
 
 func LogrusSetup(context string) LoggerService {
-
 	viperLogger := &ViperLogger{}
 	viperLogger.logger = log.New()
 	viperLogger.InitLogger(context)
