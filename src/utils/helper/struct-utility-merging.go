@@ -11,6 +11,15 @@ var (
 	isPointer   = "is pointer"
 )
 
+var (
+	ErrNilArguments                = errors2.New("src and dst must not be nil")
+	ErrDifferentArgumentsTypes     = errors2.New("src and dst must be of same type")
+	ErrNotSupported                = errors2.New("only structs, maps, and slices are supported")
+	ErrExpectedMapAsDestination    = errors2.New("dst was expected to be a map")
+	ErrExpectedStructAsDestination = errors2.New("dst was expected to be a struct")
+	ErrNonPointerAgument           = errors2.New("dst must be a pointer")
+)
+
 type MergeModuleImplm interface {
 	MergeTwoStruct(dst, src interface{}, config *Config) error
 	deepMerge(dst, src reflect.Value, deepLevel int, config *Config) error
@@ -106,16 +115,49 @@ func (m *MergeModule) deepMerge(dst, src reflect.Value, deepLevel int, config *C
 	case reflect.Ptr:
 		fallthrough
 	case reflect.Interface:
+		fmt.Println("dst is interface")
 		if isReflectNil(src) {
+			fmt.Println("src  is Nil")
 			if dst.CanSet() && src.Type().AssignableTo(dst.Type()) {
 				dst.Set(src)
 			}
 			break
 		}
+		if src.Kind() != reflect.Interface {
+			if dst.IsNil() || (src.Kind() != reflect.Ptr && Override) {
+				if dst.CanSet() && (Override || isEmpty(dst)) {
+					dst.Set(src)
+				}
+			} else if src.Kind() == reflect.Ptr {
+				if err = m.deepMerge(dst, src, deepLevel, config); err != nil {
+					return
+				}
+			} else if dst.Elem().Type() == src.Type() {
+				if err = m.deepMerge(dst, src, deepLevel, config); err != nil {
+					return
+				}
+			} else {
+				return ErrDifferentArgumentsTypes
+			}
+		}
+
+		if dst.IsNil() || Override {
+			fmt.Println("DST IS NIL")
+			if dst.CanSet() && (Override || isEmpty(dst)) {
+				dst.Set(src)
+				break
+			}
+		}
+		if dst.Elem().Kind() == src.Kind() {
+			fmt.Println("DST AND SRC ARE THE SAME TYPE")
+			if err = m.deepMerge(dst, src, deepLevel, config); err != nil {
+				return
+			}
+		}
 	//setValue for field have base type
 	default:
 		fmt.Printf("[CASE][default]dst before set :%v\n", dst)
-		if mustSet := isEmpty(dst) && !isEmpty(src); mustSet {
+		if mustSet := (isEmpty(dst) || Override) && (!isEmpty(src) || OverwriteWithEmptySrc); mustSet {
 			fmt.Printf("[CASE][default]dst before set :%v\n", dst)
 			dst.Set(src)
 			fmt.Printf("[CASE][default]dst after set :%v\n", dst)
@@ -199,7 +241,10 @@ func MergeModuleInitialize(dst, src interface{}) MergeModuleImplm {
 func isReflectNil(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Ptr, reflect.Interface, reflect.Chan, reflect.Func, reflect.Map, reflect.Slice:
-		fmt.Printf("%v is Nil", v.Kind())
+		if v.IsNil() {
+			fmt.Printf("%v is Nil\n", v.Kind())
+
+		}
 		return v.IsNil()
 	default:
 		return false
