@@ -1,4 +1,4 @@
-package restaurant
+package restaurants
 
 import (
 	"database/sql"
@@ -6,15 +6,17 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"sykros-pro/gopro/src/common"
+	"sykros-pro/gopro/src/dto"
 	"sykros-pro/gopro/src/utils"
+	"sykros-pro/gopro/src/utils/helper"
 	"time"
 )
 
-func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelper) (*RestaurantDtoPaginated, error) {
+func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelper) (*dto.RestaurantDtoPaginated, error) {
 	rawlSql := `SELECT * FROM restaurants`
 	countRawlSql := fmt.Sprintf(`%s  LIMIT @limit OFFSET @offset; `, rawlSql)
 	errChan := make(chan error)
-	restaurantChan := make(chan []*RestaurantDto)
+	restaurantChan := make(chan []*dto.RestaurantDto)
 	paginateChan := make(chan *utils.PaginateDto)
 	go func() {
 		rawlCountSql := fmt.Sprintf(`select count(*) total from ( %s ) as result;`, rawlSql)
@@ -35,7 +37,7 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 		restaurantChan <- restaurant
 	}()
 
-	var response = &RestaurantDtoPaginated{}
+	var response = &dto.RestaurantDtoPaginated{}
 	for i := 0; i < 2; i++ {
 		select {
 		case res := <-restaurantChan:
@@ -50,14 +52,14 @@ func (r *RestaurantService) GetAllRestaurant(db *gorm.DB, p *utils.PaginateHelpe
 	return response, nil
 }
 
-func (r *RestaurantService) getRestaurantsHelper(query *gorm.DB) ([]*RestaurantDto, error) {
+func (r *RestaurantService) getRestaurantsHelper(query *gorm.DB) ([]*dto.RestaurantDto, error) {
 	var dbResult []map[string]interface{}
-	utils.RawSQLScanner(query, &dbResult)
+	helper.RawSQLScanner(query, &dbResult)
 	fmt.Println(dbResult)
-	restaurantsList := make([]*RestaurantDto, 0)
+	restaurantsList := make([]*dto.RestaurantDto, 0)
 	for _, data := range dbResult {
 		if id, found := data["id"]; found && id != nil {
-			restaurantRes := &RestaurantDto{}
+			restaurantRes := &dto.RestaurantDto{}
 			r.bindRestaurantBaseData(data, restaurantRes)
 			restaurantsList = append(restaurantsList, restaurantRes)
 		} else {
@@ -67,7 +69,7 @@ func (r *RestaurantService) getRestaurantsHelper(query *gorm.DB) ([]*RestaurantD
 	return restaurantsList, nil
 }
 
-func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}, bind *RestaurantDto) {
+func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}, bind *dto.RestaurantDto) {
 	for k, v := range source {
 		switch {
 		case k == "updated_at":
@@ -106,7 +108,7 @@ func (r *RestaurantService) bindRestaurantBaseData(source map[string]interface{}
 	}
 }
 
-func (r *RestaurantService) GetRestaurantById(db *gorm.DB, id int) (*RestaurantDto, error) {
+func (r *RestaurantService) GetRestaurantById(db *gorm.DB, id int) (*dto.RestaurantDto, error) {
 	rawlSql := `SELECT * FROM restaurants where id = @id;`
 	query := db.Raw(rawlSql, sql.Named("id", id))
 	restaurant, err := r.getRestaurantsHelper(query)

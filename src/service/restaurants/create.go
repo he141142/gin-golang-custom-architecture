@@ -1,8 +1,8 @@
-package restaurant
+package restaurants
 
 import (
-	"sykros-pro/gopro/src/database/model"
 	"gorm.io/gorm"
+	"sykros-pro/gopro/src/database/model"
 )
 
 func (rs *RestaurantService) CreateRestaurant(data *model.Restaurant, db *gorm.DB) (error, *model.Restaurant) {

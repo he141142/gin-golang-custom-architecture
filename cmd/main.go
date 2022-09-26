@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"sykros-pro/gopro/src/router/restaurants"
 )
@@ -23,7 +24,9 @@ func appInit() {
 	}
 	dsn := "host=localhost user=postgres password=postgres dbname=golangdb port=9008 sslmode=disable TimeZone=Asia/Shanghai"
 	migration()
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

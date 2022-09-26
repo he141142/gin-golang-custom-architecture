@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/ttys3/rotatefilehook"
 	_ "os"
-	"sykros-pro/gopro/src/utils"
+
 	"time"
 )
 
@@ -70,8 +70,10 @@ func (logger *ViperLogger) commonLogger(data map[string]interface{}) *log.Entry 
 	defaultObjectMsg := map[string]interface {
 	}{
 		"context": logger.context,
+		"data" : data,
 	}
-	return logger.logger.WithFields(utils.MergeObject(defaultObjectMsg, data))
+	//return logger.logger.WithFields(utils.MergeObject(defaultObjectMsg, data))
+	return logger.logger.WithFields(defaultObjectMsg)
 }
 
 func (logger *ViperLogger) GetContext() string {

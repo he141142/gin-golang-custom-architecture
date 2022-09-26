@@ -1,4 +1,4 @@
-package utils
+package serviceHelper
 
 func MergeObject(SetOfObject ...map[string]interface{}) map[string]interface{} {
 	objectMerged := make(map[string]interface{})

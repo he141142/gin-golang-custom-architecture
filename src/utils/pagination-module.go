@@ -127,7 +127,7 @@ func convertQueryParam(c *gin.Context, name string, defaultValue int) int {
 }
 
 func (p *PaginateHelper) Processing(c *gin.Context, paginateType PaginateParam) {
-	p.initialize( paginateType, p.DetachPagingParam(), c)
+	p.initialize(paginateType, p.DetachPagingParam(), c)
 	fmt.Printf("%10s=%5d \n%10s=%5d\n", "Page", p.Page, "ElmPerPage", p.ElmPerPage)
 
 }

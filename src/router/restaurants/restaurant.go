@@ -3,7 +3,7 @@ package restaurants
 import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	restaurant2 "sykros-pro/gopro/src/service/restaurant"
+	restaurant2 "sykros-pro/gopro/src/service/restaurants"
 	"sykros-pro/gopro/src/share/logger"
 )
 
@@ -23,8 +23,8 @@ func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *
 	restaurantRouter.name = name
 	var vicePerLogger logger.LoggerService
 	vicePerLogger = logger.LogrusSetup("RESTAURANT_SERVICE")
-	serviceInitializingMsg := vicePerLogger.GetContext()+" Initializing"
-	vicePerLogger.LogWithMsg(serviceInitializingMsg,logger.INFO)
+	serviceInitializingMsg := vicePerLogger.GetContext() + " Initializing"
+	vicePerLogger.LogWithMsg(serviceInitializingMsg, logger.INFO)
 	restaurantRouter.service = &restaurant2.RestaurantService{
 		Db:     db,
 		Logger: vicePerLogger,
@@ -34,6 +34,7 @@ func (restaurantRouter *RestaurantRouter) Setup(r *gin.Engine, name string, db *
 		restaurant.POST("", restaurantRouter.createRestaurant())
 		restaurant.GET("", restaurantRouter.getAllRestaurants())
 		restaurant.GET("/:id", restaurantRouter.getRestaurantById())
+		restaurant.PUT("/:id", restaurantRouter.updateRestaurantById())
 
 	}
 }

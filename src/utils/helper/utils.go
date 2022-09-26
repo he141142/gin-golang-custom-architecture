@@ -1,4 +1,4 @@
-package utils
+package helper
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type ValidateErrorMessage struct {
 	Message []string `json:"validation_errors"`
 }
 
-func ValidateDto(dto interface{}) (validationResult *[]byte) {
+func DtoValidate(dto interface{}) (validationResult *[]byte) {
 	validator := validator2.New()
 	en := en.New()
 	uni := ut.New(en, en)
@@ -62,4 +62,9 @@ func MaptwoStructs[T1 any, T2 any](source *T1, target *T2) error {
 		return errors.New(err)
 	}
 	return nil
+}
+
+func MapStructToJSON[T any](structIn *any) string {
+	jsonStr, _ := jsoniter.MarshalToString(structIn)
+	return jsonStr
 }

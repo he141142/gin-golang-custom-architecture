@@ -208,6 +208,8 @@ func isEmpty(v reflect.Value) bool {
 		return v.Int() == 0
 	case reflect.Uint, reflect.Uint32, reflect.Uint64, reflect.Uint16, reflect.Uint8:
 		return v.Uint() == 0
+	case reflect.Float64, reflect.Float32:
+		return v.Float() == 0
 	case reflect.Interface, reflect.Ptr:
 		if v.IsNil() {
 			return true
@@ -216,7 +218,6 @@ func isEmpty(v reflect.Value) bool {
 		return v.IsNil()
 	}
 	return false
-
 }
 func getStructName(strct interface{}) (structName string) {
 	if t := reflect.TypeOf(strct); t.Kind() != reflect.Ptr {

@@ -1,4 +1,4 @@
-package restaurant
+package dto
 
 import (
 	"sykros-pro/gopro/src/utils"
